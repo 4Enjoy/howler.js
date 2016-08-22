@@ -497,7 +497,11 @@
           node.id = soundId;
           node.paused = false;
           refreshBuffer(self, [loop, loopStart, loopEnd], soundId);
-          self._playStart = ctx.currentTime;
+          try {
+            self._playStart = ctx.currentTime;
+          } catch(err) {
+            console.warn("Howler.B", err);
+          }
           node.gain.value = self._volume;
 
           if (typeof node.bufferSource.start === 'undefined') {
@@ -509,7 +513,12 @@
           if (node.readyState === 4 || !node.readyState && navigator.isCocoonJS) {
             node.readyState = 4;
             node.id = soundId;
-            node.currentTime = pos;
+            try {
+              node.currentTime = pos;
+            } catch(err) {
+              console.warn("Howler.C", err);
+            }
+
             node.muted = Howler._muted || node.muted;
             node.volume = self._volume * Howler.volume();
             setTimeout(function() { node.play(); }, 0);
@@ -629,7 +638,11 @@
           }
         } else if (!isNaN(activeNode.duration)) {
           activeNode.pause();
-          activeNode.currentTime = 0;
+          try {
+            activeNode.currentTime = 0;
+          } catch(err) {
+            console.warn("Howler.A", err);
+          }
         }
       }
 
@@ -800,7 +813,12 @@
 
           return self;
         } else {
-          return self._webAudio ? activeNode._pos + (ctx.currentTime - self._playStart) : activeNode.currentTime;
+          try {
+            return self._webAudio ? activeNode._pos + (ctx.currentTime - self._playStart) : activeNode.currentTime;
+          } catch(err) {
+            console.warn("Howler.D", err);
+            return 0;
+          }
         }
       } else if (pos >= 0) {
         return self;
@@ -808,7 +826,12 @@
         // find the first inactive node to return the pos for
         for (var i=0; i<self._audioNode.length; i++) {
           if (self._audioNode[i].paused && self._audioNode[i].readyState === 4) {
-            return (self._webAudio) ? self._audioNode[i]._pos : self._audioNode[i].currentTime;
+            try {
+              return (self._webAudio) ? self._audioNode[i]._pos : self._audioNode[i].currentTime;
+            } catch(err) {
+              console.warn("Howler.E", err);
+              return 0;
+            }
           }
         }
       }
