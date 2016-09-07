@@ -99,7 +99,11 @@
      * @return {Howler}
      */
     mute: function() {
-      this._setMuted(true);
+      try {
+        this._setMuted(true);
+      } catch(err) {
+        console.warn(err);
+      }
 
       return this;
     },
@@ -109,7 +113,11 @@
      * @return {Howler}
      */
     unmute: function() {
-      this._setMuted(false);
+      try {
+        this._setMuted(false);
+      } catch(err) {
+        console.warn(err);
+      }
 
       return this;
     },
@@ -917,7 +925,12 @@
             toVol = to;
 
           setTimeout(function() {
-            self.volume(vol, id);
+            try {
+              self.volume(vol, id);
+            } catch(err) {
+              console.warn(err);
+            }
+
 
             if (vol === toVol) {
               if (callback) callback();
